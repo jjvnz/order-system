@@ -1,7 +1,7 @@
 (ns order-system.domain.order
   "Lógica de dominio pura - sin dependencias de infraestructura"
-  (:require [order-system.domain.specs :as specs]
-            [clojure.java-time :as jt]))
+  (:require [order-system.domain.specs :as specs])
+  (:import (java.time Instant)))
 
 (defn calculate-total [items]
   (reduce (fn [total {:keys [quantity unit-price discount]}]
@@ -18,7 +18,7 @@
                :items items
                :total (calculate-total items)
                :status :pending
-               :created-at (jt/instant)}]
+               :created-at (Instant/now)}]
     (if (specs/validate-order order)
       order
       (throw (ex-info "Invalid order data" {:errors (specs/explain-order order)})))))
@@ -33,7 +33,7 @@
   {:order-id (:order-id order)
    :event-type event-type
    :payload order
-   :timestamp (jt/instant)})
+   :timestamp (Instant/now)})
 
 (defmulti process-order-event
   (fn [order event-type]

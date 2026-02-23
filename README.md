@@ -11,7 +11,7 @@ src/order_system/
 │   ├── specs.clj     # clojure.spec validations
 │   └── order.clj     # Domain entities and logic
 ├── adapters/         # Infrastructure implementations
-│   ├── sqlite.clj    # SQLite persistence (OrderRepository)
+│   ├── postgres.clj  # PostgreSQL persistence (OrderRepository)
 │   ├── kafka.clj     # Kafka messaging (MessagePublisher)
 │   └── http.clj      # REST API (reitit + aleph)
 └── system.clj        # System composition with Integrant
@@ -20,10 +20,10 @@ src/order_system/
 ## Technology Stack
 
 - **Language**: Clojure 1.11.1
-- **Lifecycle**: Integrant
-- **Database**: SQLite (next.jdbc)
+- **Database**: PostgreSQL (next.jdbc)
 - **Messaging**: Kafka (jackdaw)
 - **Web API**: reitit + muuntaja + aleph
+- **Lifecycle**: Integrant
 
 ## Prerequisites
 
@@ -32,18 +32,18 @@ src/order_system/
 ## Quick Start
 
 ```bash
-# Start the system (Zookeeper + Kafka + App)
+# Start the system (PostgreSQL + Zookeeper + Kafka + App)
 cd order-system
-docker-compose up
+docker-compose up --build
 ```
 
-The API will be available at `http://localhost:8080`
+The API will be available at `http://localhost:8081`
 
 ## API Endpoints
 
 ### Create Order
 ```bash
-curl -X POST http://localhost:8080/api/orders \
+curl -X POST http://localhost:8081/api/orders \
   -H "Content-Type: application/json" \
   -d '{
     "customer-id": "customer-123",
@@ -64,19 +64,19 @@ Response (202 Accepted):
 
 ### Get Order
 ```bash
-curl http://localhost:8080/api/orders/{order-id}
+curl http://localhost:8081/api/orders/{order-id}
 ```
 
 ### List Orders
 ```bash
-curl http://localhost:8080/api/orders
+curl http://localhost:8081/api/orders
 ```
 
 ## Flow
 
 1. **HTTP Request** → Validates payload with `clojure.spec`
 2. **Publish to Kafka** → Returns 202 (Accepted)
-3. **Kafka Consumer** → Persists to SQLite asynchronously
+3. **Kafka Consumer** → Persists to PostgreSQL asynchronously
 
 ## Testing
 
@@ -98,24 +98,23 @@ Example test with mock injection:
 
 ## Configuration
 
-Edit `resources/config.edn`:
-```edn
-{:database-url "jdbc:sqlite:orders.db"
- :kafka {:brokers ["localhost:9092"]}
- :http {:port 8080}}
-```
+Environment variables:
+- `DATABASE_URL` - PostgreSQL connection string
+- `KAFKA_BROKERS` - Kafka broker address
+- `HTTP_PORT` - HTTP server port (default: 8081)
 
 ## Docker Services
 
+- **postgres**: PostgreSQL 15 (port 5432)
 - **zookeeper**: ZooKeeper (port 2181)
 - **kafka**: Kafka broker (port 9092)
-- **app**: Clojure application (port 8080)
+- **order-system**: Clojure application (port 8081)
 
 ## Clean Architecture Principles
 
 - **Domain Layer**: Pure business logic, no external dependencies
 - **Ports**: Clojure protocols define abstractions
-- **Adapters**: Concrete implementations (SQLite, Kafka)
+- **Adapters**: Concrete implementations (PostgreSQL, Kafka)
 - **Dependency Injection**: Integrant manages lifecycle
 
 ## License
