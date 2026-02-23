@@ -8,6 +8,6 @@ RUN clojure -P
 COPY src ./src
 COPY resources ./resources
 
-EXPOSE 8080
+EXPOSE 8081
 
 CMD ["clojure", "-M", "-m", "order-system.system"]

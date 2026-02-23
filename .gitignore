@@ -1,0 +1,14 @@
+*.class
+*.jar
+*.log
+.idea/
+*.iml
+/target/
+/classes/
+/deps.edn
+pom.xml
+*.db
+.cpcache/
+.nrepl-port
+.repl
+data/

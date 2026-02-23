@@ -3,7 +3,7 @@
   (:require [next.jdbc :as jdbc]
             [next.jdbc.result-set :as rs]
             [order-system.domain.ports :as ports]
-            [clojure.java-time :as jt])
+            [java-time :as jt])
   (:import (java.time Instant)))
 
 (extend-protocol rs/ReadableColumn
