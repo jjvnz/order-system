@@ -1,7 +1,8 @@
 (ns order-system.adapters.kafka
   "Adapter para Kafka - implementa MessagePublisher y EventConsumer"
   (:require [order-system.domain.ports :as ports]
-            [clojure.data.json :as json])
+            [clojure.data.json :as json]
+            [clojure.string :as str])
   (:import (java.util Properties UUID)
            (org.apache.kafka.clients.producer KafkaProducer ProducerRecord)
            (org.apache.kafka.clients.consumer ConsumerRecord)))
@@ -29,7 +30,7 @@
         event))))
 
 (defn create-publisher [brokers]
-  (let [producer (KafkaProducer. (create-producer (first brokers)))]
+  (let [producer (KafkaProducer. (create-producer (clojure.string/join "," brokers)))]
     (KafkaPublisher. producer {:brokers brokers})))
 
 (defrecord OrderEventConsumer [consumer repository]
@@ -56,7 +57,7 @@
 
 (defn create-consumer [brokers repository]
   (let [config (doto (Properties.)
-                  (.put "bootstrap.servers" (first brokers))
+                  (.put "bootstrap.servers" (str/join "," brokers))
                   (.put "group.id" (str (UUID/randomUUID)))
                   (.put "auto.offset.reset" "earliest")
                   (.put "enable.auto.commit" "true")

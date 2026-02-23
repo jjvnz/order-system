@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS orders (
     customer_id VARCHAR(36) NOT NULL,
     items JSONB NOT NULL,
     total DECIMAL(10, 2) NOT NULL,
-    status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'completed', 'cancelled')),
+    status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'confirmed', 'processing', 'completed', 'cancelled')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

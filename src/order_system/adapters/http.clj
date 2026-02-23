@@ -12,7 +12,10 @@
 (def ^:dynamic *publisher* nil)
 
 (defn handle-create-order [request]
-  (let [body (:body request)
+  (let [body (or (:body-params request) 
+                 (:json-params request) 
+                 (:body request))
+        _ (println "Request body received:" body)
         validated (specs/validate-order body)]
     (if validated
       (try
@@ -41,12 +44,13 @@
     {:status 200 :body (ports/list-orders repository)}))
 
 (def routes
-  ["/api/orders"
-   {:post handle-create-order
-    :get handle-list-orders
-    :parameters {:path {:order-id string?}}}
-   ["/:order-id"
-    {:get handle-get-order}]])
+  ["/api"
+   ["/orders"
+    {:post {:handler handle-create-order}
+     :get {:handler handle-list-orders}}]
+   ["/orders/:order-id"
+    {:get {:handler handle-get-order
+           :parameters {:path {:order-id string?}}}}]])
 
 (def muuntaja-instance
   (muuntaja/create
@@ -58,7 +62,7 @@
   (ring/ring-handler
    (ring/router
     [routes]
-    {:data {:middleware [muuntaja-middleware/wrap-format]
+    {:data {:middleware [[muuntaja-middleware/wrap-format muuntaja-instance]]
             :muuntaja muuntaja-instance}})
    (constantly {:status 404 :body "Not found"})))
 
