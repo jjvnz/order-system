@@ -1,6 +1,5 @@
 (ns order-system.domain.ports
-  "Protocolos que definen los puertos (interfaces) del sistema"
-  (:require [clojure.spec.alpha :as s]))
+  "Protocolos que definen los puertos (interfaces) del sistema")
 
 (defprotocol OrderRepository
   (save-order [this order])
