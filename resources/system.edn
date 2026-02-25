@@ -1,4 +1,0 @@
-{:database/datasource {}
- :database/repository {}
- :kafka/publisher {}
- :http/server {}}

@@ -6,7 +6,6 @@ COPY deps.edn ./deps.edn
 RUN clojure -P
 
 COPY src ./src
-COPY resources ./resources
 
 ENV JAVA_OPTS="-Xmx512m -Xms256m"
 ENV HTTP_PORT=8081

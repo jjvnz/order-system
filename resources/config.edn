@@ -1,4 +1,0 @@
-{:database-url ~(or (System/getenv "DATABASE_URL") "jdbc:postgresql://localhost:5432/orders_db?user=orders&password=orders_password")
- :kafka {:brokers ~[(or (System/getenv "KAFKA_BROKERS") "localhost:9092")]
-         :consumer-group ~(or (System/getenv "KAFKA_CONSUMER_GROUP") "order-processor-group")}
- :http {:port ~(Long/parseLong (or (System/getenv "HTTP_PORT") "8081"))}}
